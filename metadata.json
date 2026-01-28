@@ -1,0 +1,5 @@
+{
+  "name": "LegalFlow",
+  "description": "A Notion-style, AI-powered legal practice management platform featuring contract drafting with style training, client management, and task tracking.",
+  "requestFramePermissions": []
+}
