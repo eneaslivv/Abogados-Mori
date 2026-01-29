@@ -68,8 +68,15 @@ export const Documents: React.FC = () => {
     setFirmStyle(profile?.style_text || '');
   };
 
-  const getClientName = (id?: string) => clients.find(c => c.id === id)?.full_name || 'Unassigned';
-  const getCategoryName = (id?: string) => categories.find(c => c.id === id)?.name || 'Uncategorized';
+  const getClientName = (id?: string) => clients.find(c => c.id === id)?.full_name || 'Sin asignar';
+  const getCategoryName = (id?: string) => categories.find(c => c.id === id)?.name || 'Sin categoria';
+  const statusLabels: Record<PendingUpload['status'], string> = {
+      pending: 'PENDIENTE',
+      extracting: 'EXTRAYENDO',
+      cleaning: 'LIMPIANDO',
+      analyzing: 'ANALIZANDO',
+      ready: 'LISTO'
+  };
 
   // --- Bulk Upload Handlers ---
 
@@ -186,8 +193,8 @@ export const Documents: React.FC = () => {
   };
 
   const handleBatchDelete = () => {
-      if (!permissions.can_delete_documents) return alert("You do not have permission to delete documents.");
-      if (confirm(`Delete ${selectedDocIds.size} documents?`)) {
+      if (!permissions.can_delete_documents) return alert('No tienes permiso para eliminar documentos.');
+      if (confirm(`¿Eliminar ${selectedDocIds.size} documentos?`)) {
           selectedDocIds.forEach(id => db.delete('documents', id));
           setSelectedDocIds(new Set());
           refreshData();
@@ -259,8 +266,8 @@ export const Documents: React.FC = () => {
                       </div>
                   </div>
                   <div className="flex items-center gap-2">
-                       <button onClick={() => setViewMode('clean')} className={`px-3 py-1.5 text-xs font-medium rounded ${viewMode === 'clean' ? 'bg-gray-100 text-gray-900' : 'text-gray-500'}`}>Clean</button>
-                       <button onClick={() => setViewMode('raw')} className={`px-3 py-1.5 text-xs font-medium rounded ${viewMode === 'raw' ? 'bg-gray-100 text-gray-900' : 'text-gray-500'}`}>Raw</button>
+                       <button onClick={() => setViewMode('clean')} className={`px-3 py-1.5 text-xs font-medium rounded ${viewMode === 'clean' ? 'bg-gray-100 text-gray-900' : 'text-gray-500'}`}>Limpio</button>
+                       <button onClick={() => setViewMode('raw')} className={`px-3 py-1.5 text-xs font-medium rounded ${viewMode === 'raw' ? 'bg-gray-100 text-gray-900' : 'text-gray-500'}`}>Original</button>
                   </div>
               </div>
               <div className="flex-1 flex overflow-hidden">
@@ -273,7 +280,7 @@ export const Documents: React.FC = () => {
                   </div>
                   <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
                       <div className="flex border-b border-gray-200">
-                          <button onClick={() => setSidebarTab('refine')} className={`flex-1 py-3 text-xs font-bold uppercase ${sidebarTab === 'refine' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-400'}`}>Refine</button>
+                          <button onClick={() => setSidebarTab('refine')} className={`flex-1 py-3 text-xs font-bold uppercase ${sidebarTab === 'refine' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-400'}`}>Refinar</button>
                           <button onClick={() => setSidebarTab('chat')} className={`flex-1 py-3 text-xs font-bold uppercase ${sidebarTab === 'chat' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-400'}`}>Chat</button>
                           <button onClick={() => setSidebarTab('info')} className={`flex-1 py-3 text-xs font-bold uppercase ${sidebarTab === 'info' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-400'}`}>Info</button>
                       </div>
@@ -283,10 +290,10 @@ export const Documents: React.FC = () => {
                                   <div>
                                       <h4 className="text-xs font-bold text-gray-900 uppercase mb-3 flex items-center gap-2">
                                           <Icons.Brain size={14} className="text-purple-600" />
-                                          AI Rewriter
+                                          Reescritor IA
                                       </h4>
                                       <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-                                          Rewrite the entire document using specific instructions or applying your firm's trained style.
+                                          Reescribe el documento completo con instrucciones especificas o usando el estilo entrenado del estudio.
                                       </p>
                                       
                                       <div className="space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
@@ -296,20 +303,20 @@ export const Documents: React.FC = () => {
                                                       {useFirmStyle && <Icons.Check size={10} className="text-white" />}
                                                   </div>
                                                   <input type="checkbox" className="hidden" checked={useFirmStyle} onChange={() => setUseFirmStyle(!useFirmStyle)} />
-                                                  <span className="text-sm font-medium text-gray-900">Apply Firm DNA</span>
+                                                  <span className="text-sm font-medium text-gray-900">Aplicar ADN del Estudio</span>
                                               </label>
                                               <p className="text-[10px] text-gray-400 pl-6">
-                                                  {firmStyle ? "Using active style profile." : "No style trained yet."}
+                                                  {firmStyle ? "Usando perfil de estilo activo." : "Aun no hay estilo entrenado."}
                                               </p>
                                           </div>
 
                                           <div>
-                                              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Objective / Instructions</label>
+                                              <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Objetivo / Instrucciones</label>
                                               <textarea 
                                                 value={rewriteObjective}
                                                 onChange={(e) => setRewriteObjective(e.target.value)}
                                                 className="w-full text-sm border-gray-300 rounded-lg p-2 h-24 focus:ring-purple-500 focus:border-purple-500 resize-none"
-                                                placeholder="e.g. 'Make the tone more aggressive', 'Summarize preamble', 'Translate to English'..."
+                                                placeholder="Ej. 'Hacer el tono mas agresivo', 'Resumir preambulo', 'Traducir al ingles'..."
                                               />
                                           </div>
 
@@ -319,7 +326,7 @@ export const Documents: React.FC = () => {
                                             className="w-full bg-purple-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-purple-700 disabled:opacity-50 flex justify-center items-center gap-2"
                                           >
                                               {isRewriting ? <Icons.Sparkles className="animate-spin" size={16} /> : <Icons.Sparkles size={16} />}
-                                              {isRewriting ? 'Transforming...' : 'Rewrite Document'}
+                                              {isRewriting ? 'Transformando...' : 'Reescribir documento'}
                                           </button>
                                       </div>
                                   </div>
@@ -328,18 +335,18 @@ export const Documents: React.FC = () => {
                           {sidebarTab === 'info' && (
                               <div className="space-y-4">
                                   <div>
-                                      <label className="text-xs font-bold text-gray-400 uppercase">Tags</label>
+                                      <label className="text-xs font-bold text-gray-400 uppercase">Etiquetas</label>
                                       <div className="flex flex-wrap gap-1 mt-1">
                                           {selectedDoc.tags?.map(t => <span key={t} className="px-2 py-0.5 bg-white border border-gray-200 rounded text-xs text-gray-600">{t}</span>)}
-                                          {!selectedDoc.tags?.length && <span className="text-xs text-gray-400 italic">No tags</span>}
+                                          {!selectedDoc.tags?.length && <span className="text-xs text-gray-400 italic">Sin etiquetas</span>}
                                       </div>
                                   </div>
                                   <div>
-                                      <label className="text-xs font-bold text-gray-400 uppercase">Category</label>
+                                      <label className="text-xs font-bold text-gray-400 uppercase">Categoria</label>
                                       <p className="text-sm text-gray-900">{getCategoryName(selectedDoc.category_id)}</p>
                                   </div>
                                   <div>
-                                      <label className="text-xs font-bold text-gray-400 uppercase">Client</label>
+                                      <label className="text-xs font-bold text-gray-400 uppercase">Cliente</label>
                                       <p className="text-sm text-gray-900">{getClientName(selectedDoc.linked_client_id)}</p>
                                   </div>
                               </div>
@@ -355,7 +362,7 @@ export const Documents: React.FC = () => {
                                       ))}
                                   </div>
                                   <form onSubmit={handleAsk} className="relative">
-                                      <input value={qaInput} onChange={(e) => setQaInput(e.target.value)} placeholder="Ask Q..." className="w-full text-sm border-gray-300 rounded pr-8" />
+                                      <input value={qaInput} onChange={(e) => setQaInput(e.target.value)} placeholder="Pregunta..." className="w-full text-sm border-gray-300 rounded pr-8" />
                                       <button type="submit" className="absolute right-2 top-2 text-purple-600"><Icons.ChevronRight size={16} /></button>
                                   </form>
                               </div>
@@ -370,12 +377,12 @@ export const Documents: React.FC = () => {
   return (
     <div className="h-full flex flex-col space-y-6">
       <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Document Manager</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Gestor de Documentos</h1>
           <div className="flex gap-2">
                <input type="file" multiple ref={fileInputRef} className="hidden" onChange={handleFileSelect} />
                {permissions.can_upload_documents && (
                    <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
-                       <Icons.Upload size={16} /> Bulk Upload
+                        <Icons.Upload size={16} /> Carga Masiva
                    </button>
                )}
           </div>
@@ -383,34 +390,34 @@ export const Documents: React.FC = () => {
 
       {/* Tabs */}
       <div className="flex items-center gap-6 border-b border-gray-200">
-          <button onClick={() => setActiveTab('all')} className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'all' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500'}`}>All Documents</button>
-          <button onClick={() => setActiveTab('pending_assignment')} className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'pending_assignment' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500'}`}>Pending Assignment</button>
-          {pendingUploads.length > 0 && <button onClick={() => setActiveTab('bulk_upload')} className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bulk_upload' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'}`}>Bulk Upload ({pendingUploads.length})</button>}
+          <button onClick={() => setActiveTab('all')} className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'all' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500'}`}>Todos los Documentos</button>
+          <button onClick={() => setActiveTab('pending_assignment')} className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'pending_assignment' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500'}`}>Asignacion Pendiente</button>
+          {pendingUploads.length > 0 && <button onClick={() => setActiveTab('bulk_upload')} className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bulk_upload' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'}`}>Carga Masiva ({pendingUploads.length})</button>}
       </div>
 
       {activeTab === 'bulk_upload' ? (
           <div className="flex-1 bg-white rounded-xl border border-gray-200 p-6 flex flex-col">
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                   <h2 className="text-lg font-bold">Bulk Processing Queue</h2>
+                   <h2 className="text-lg font-bold">Cola de Procesamiento Masivo</h2>
                    
                    <div className="flex items-center gap-3">
                        <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
-                           <span className="text-xs font-bold text-gray-500 uppercase">Assign All To:</span>
+                            <span className="text-xs font-bold text-gray-500 uppercase">Asignar todo a:</span>
                            <select 
                                 value={bulkAssignClient}
                                 onChange={(e) => handleApplyBulkClient(e.target.value)}
                                 className="bg-transparent border-none text-sm font-medium focus:ring-0 p-0 cursor-pointer text-blue-600"
                            >
-                               <option value="">-- Select Client --</option>
+                               <option value="">-- Seleccionar Cliente --</option>
                                {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
                            </select>
                        </div>
 
                        <button onClick={processPendingUploads} disabled={isProcessingBulk} className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-bold hover:bg-purple-700 disabled:opacity-50">
-                           {isProcessingBulk ? 'AI Processing...' : 'Run Auto-Categorization'}
+                           {isProcessingBulk ? 'Procesando IA...' : 'Ejecutar Autocategorizacion'}
                        </button>
                        <button onClick={handleSaveBulk} disabled={pendingUploads.some(p => p.status !== 'ready')} className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 disabled:opacity-50">
-                           Save All
+                            Guardar Todo
                        </button>
                    </div>
                </div>
@@ -422,7 +429,7 @@ export const Documents: React.FC = () => {
                                <Icons.FileText className="text-gray-400" />
                                <div>
                                    <p className="text-sm font-medium text-gray-900">{p.file.name}</p>
-                                   <p className="text-xs text-gray-500">{p.status.toUpperCase()}</p>
+                                    <p className="text-xs text-gray-500">{statusLabels[p.status]}</p>
                                </div>
                            </div>
                            
@@ -440,7 +447,7 @@ export const Documents: React.FC = () => {
                                     onChange={(e) => handleUpdatePendingClient(p.id, e.target.value)}
                                     className="w-full text-xs border-gray-200 rounded bg-white"
                                 >
-                                    <option value="">-- Assign Client --</option>
+                                    <option value="">-- Asignar Cliente --</option>
                                     {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
                                 </select>
                            </div>
@@ -457,15 +464,15 @@ export const Documents: React.FC = () => {
                {/* Toolbar */}
                <div className="p-4 border-b border-gray-100 flex justify-between bg-gray-50/50">
                    <div className="flex gap-3">
-                       <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search..." className="border border-gray-200 rounded px-3 py-1.5 text-sm" />
-                       <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="border border-gray-200 rounded px-3 py-1.5 text-sm"><option value="ALL">All Categories</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-                       <select value={filterClient} onChange={(e) => setFilterClient(e.target.value)} className="border border-gray-200 rounded px-3 py-1.5 text-sm"><option value="ALL">All Clients</option>{clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}</select>
+                        <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Buscar..." className="border border-gray-200 rounded px-3 py-1.5 text-sm" />
+                        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="border border-gray-200 rounded px-3 py-1.5 text-sm"><option value="ALL">Todas las categorias</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+                        <select value={filterClient} onChange={(e) => setFilterClient(e.target.value)} className="border border-gray-200 rounded px-3 py-1.5 text-sm"><option value="ALL">Todos los clientes</option>{clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}</select>
                    </div>
                    {selectedDocIds.size > 0 && (
                        <div className="flex items-center gap-2 animate-in fade-in">
-                           <span className="text-xs font-bold text-gray-500 mr-2">{selectedDocIds.size} selected</span>
+                            <span className="text-xs font-bold text-gray-500 mr-2">{selectedDocIds.size} seleccionados</span>
                            <select onChange={(e) => handleBatchAssignClient(e.target.value)} className="text-xs border-gray-300 rounded">
-                               <option value="">Assign to Client...</option>
+                                <option value="">Asignar a cliente...</option>
                                {clients.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
                            </select>
                            {permissions.can_delete_documents && (
@@ -481,11 +488,11 @@ export const Documents: React.FC = () => {
                        <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 font-medium uppercase text-xs tracking-wider">
                            <tr>
                                <th className="px-4 py-3 w-10"><input type="checkbox" onChange={toggleSelectAll} checked={selectedDocIds.size === filteredDocs.length && filteredDocs.length > 0} /></th>
-                               <th className="px-4 py-3">Document</th>
-                               <th className="px-4 py-3">Category</th>
-                               <th className="px-4 py-3">Client</th>
-                               <th className="px-4 py-3">Tags</th>
-                               <th className="px-4 py-3 text-right">Date</th>
+                                <th className="px-4 py-3">Documento</th>
+                                <th className="px-4 py-3">Categoria</th>
+                                <th className="px-4 py-3">Cliente</th>
+                                <th className="px-4 py-3">Etiquetas</th>
+                                <th className="px-4 py-3 text-right">Fecha</th>
                            </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-100">
@@ -508,7 +515,7 @@ export const Documents: React.FC = () => {
                                    <td className="px-4 py-3 text-right text-gray-500 text-xs font-mono">{new Date(doc.created_at).toLocaleDateString()}</td>
                                </tr>
                            ))}
-                           {filteredDocs.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-gray-400">No documents found.</td></tr>}
+                            {filteredDocs.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-gray-400">No se encontraron documentos.</td></tr>}
                        </tbody>
                    </table>
                </div>

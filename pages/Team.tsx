@@ -36,19 +36,28 @@ export const Team: React.FC = () => {
       }
   };
 
+  const getRoleLabel = (role: UserRole) => {
+      switch (role) {
+          case UserRole.SUPER_ADMIN: return 'Super Administrador';
+          case UserRole.LAWYER: return 'Abogado';
+          case UserRole.PARALEGAL: return 'Paralegal';
+          default: return 'Asistente';
+      }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-            <h1 className="text-2xl font-bold text-gray-900">Team Management</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage access and roles for your firm members.</p>
+            <h1 className="text-2xl font-bold text-gray-900">Gestión de Equipo</h1>
+            <p className="text-sm text-gray-500 mt-1">Administre accesos y roles del estudio.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 shadow-sm"
         >
           <Icons.Plus size={16} />
-          Add Member
+          Agregar Miembro
         </button>
       </div>
 
@@ -56,11 +65,11 @@ export const Team: React.FC = () => {
         <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                    <th className="px-6 py-3 font-semibold text-gray-900">Name</th>
-                    <th className="px-6 py-3 font-semibold text-gray-900">Email</th>
-                    <th className="px-6 py-3 font-semibold text-gray-900">Role</th>
-                    <th className="px-6 py-3 font-semibold text-gray-900">Joined</th>
-                    <th className="px-6 py-3 text-right">Actions</th>
+                    <th className="px-6 py-3 font-semibold text-gray-900">Nombre</th>
+                    <th className="px-6 py-3 font-semibold text-gray-900">Correo</th>
+                    <th className="px-6 py-3 font-semibold text-gray-900">Rol</th>
+                    <th className="px-6 py-3 font-semibold text-gray-900">Alta</th>
+                    <th className="px-6 py-3 text-right">Acciones</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -75,7 +84,7 @@ export const Team: React.FC = () => {
                         <td className="px-6 py-4">{user.email}</td>
                         <td className="px-6 py-4">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
-                                {user.role.replace('_', ' ').toUpperCase()}
+                                {getRoleLabel(user.role)}
                             </span>
                         </td>
                         <td className="px-6 py-4 text-gray-500">
@@ -94,29 +103,29 @@ export const Team: React.FC = () => {
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
               <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl animate-in zoom-in-95">
                   <div className="flex justify-between items-center mb-5">
-                      <h2 className="text-lg font-bold text-gray-900">Invite New Member</h2>
+                      <h2 className="text-lg font-bold text-gray-900">Invitar Nuevo Miembro</h2>
                       <button onClick={() => setIsModalOpen(false)}><Icons.Close size={20} className="text-gray-400" /></button>
                   </div>
                   <form onSubmit={handleAddUser} className="space-y-4">
                       <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
                           <input name="name" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500" />
                       </div>
                       <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
                           <input name="email" type="email" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500" />
                       </div>
                       <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
                           <select name="role" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
                               {Object.values(UserRole).map(role => (
-                                  <option key={role} value={role}>{role.replace('_', ' ').toUpperCase()}</option>
+                                  <option key={role} value={role}>{getRoleLabel(role)}</option>
                               ))}
                           </select>
                       </div>
                       <div className="flex justify-end gap-2 pt-4">
-                          <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-                          <button type="submit" className="px-4 py-2 text-sm font-bold text-white bg-gray-900 hover:bg-gray-800 rounded-lg">Invite User</button>
+                          <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
+                          <button type="submit" className="px-4 py-2 text-sm font-bold text-white bg-gray-900 hover:bg-gray-800 rounded-lg">Invitar Usuario</button>
                       </div>
                   </form>
               </div>

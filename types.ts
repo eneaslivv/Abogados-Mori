@@ -234,6 +234,13 @@ export interface ContractStyleProfile {
   completeness_score?: number; // 0-100
   missing_elements?: string[]; // ["Payment Clauses", "Dispute Resolution"]
   suggestions?: string[]; // ["Upload an invoice", "Upload a service agreement"]
+
+  validation_checklist?: string[];
+  examples?: {
+    good_preamble?: string;
+    good_clause_structure?: string;
+    signature_block?: string;
+  };
   
   updated_at: string;
 }

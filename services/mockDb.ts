@@ -39,7 +39,7 @@ class MockDatabase {
           contracts: [],
           tasks: [],
           users: [
-              { id: 'user-1', name: 'John Doe', email: 'john@example.com', role: UserRole.LAWYER, tenant_id: 'demo', created_at: new Date().toISOString() }
+              { id: 'user-1', name: 'Juan Perez', email: 'juan@example.com', role: UserRole.LAWYER, tenant_id: 'demo', created_at: new Date().toISOString() }
           ],
           events: [],
           client_documents: [],
@@ -49,12 +49,12 @@ class MockDatabase {
               { id: 'cat-divorcios', name: 'Divorcios', description: 'Divorcio, separación, convenio regulador', tenant_id: 'demo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
               { id: 'cat-alimentos', name: 'Alimentos', description: 'Cuota alimentaria, manutención', tenant_id: 'demo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
               { id: 'cat-sucesiones', name: 'Sucesiones', description: 'Herencia, declaratoria, testamento', tenant_id: 'demo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-              { id: 'cat-corporativo', name: 'Corporativo / Contratos', description: 'General corporate law', tenant_id: 'demo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+              { id: 'cat-corporativo', name: 'Corporativo / Contratos', description: 'Derecho corporativo general', tenant_id: 'demo', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
           ],
           document_categories: [
-              { id: 'doc-cat-1', name: 'Evidence', tenant_id: 'demo', created_at: new Date().toISOString() },
-              { id: 'doc-cat-2', name: 'Identification', tenant_id: 'demo', created_at: new Date().toISOString() },
-              { id: 'doc-cat-3', name: 'Financial', tenant_id: 'demo', created_at: new Date().toISOString() }
+              { id: 'doc-cat-1', name: 'Evidencia', tenant_id: 'demo', created_at: new Date().toISOString() },
+              { id: 'doc-cat-2', name: 'Identificacion', tenant_id: 'demo', created_at: new Date().toISOString() },
+              { id: 'doc-cat-3', name: 'Financiero', tenant_id: 'demo', created_at: new Date().toISOString() }
           ],
           documents: [],
           training_docs: [],
